@@ -1,4 +1,6 @@
+import model.CourseIdea;
 import model.SimpleCourseIdeaDAO;
+import model.CourseIdeaDAO;
 import spark.ModelAndView;
 import spark.template.handlebars.HandlebarsTemplateEngine;
 
@@ -9,7 +11,7 @@ import static spark.Spark.*;
 
 public class Main {
     public static void main(String[] args) {
-
+        staticFileLocation("/public");
         CourseIdeaDAO dao = new SimpleCourseIdeaDAO();
 
         get("/hello", (req, res) -> "Hello World");
@@ -25,5 +27,20 @@ public class Main {
             model.put("username", username);
             return new ModelAndView(model, "sign-in.hbs");
         }, new HandlebarsTemplateEngine());
+
+        get("/ideas", (req, res) -> {
+            Map<String, Object> model = new HashMap<>();
+            model.put("ideas", dao.findAll());
+            return new ModelAndView(model, "ideas.hbs");
+        }, new HandlebarsTemplateEngine());
+
+        post("/ideas", (req, res) -> {
+            String title = req.queryParams("title");
+            // TODO:csd - this assignment is tied to the cookie implementation
+            CourseIdea courseIdea = new CourseIdea(title, req.cookie("username"));
+            dao.add(courseIdea);
+            res.redirect("/ideas");
+            return null;
+        });
     }
 }
