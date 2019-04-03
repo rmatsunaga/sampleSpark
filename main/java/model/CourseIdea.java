@@ -1,14 +1,21 @@
 package model;
 
+import com.github.slugify.Slugify;
+import java.util.*;
 import java.util.Objects;
 
 public class CourseIdea {
+    private String slug;
     private String title;
     private String creator;
+    private Set<String> voters;
 
     public CourseIdea(String title, String creator) {
+        voters = new HashSet<>();
         this.title = title;
         this.creator = creator;
+        Slugify slugify = new Slugify();
+        slug = slugify.slugify(title);
     }
 
     public String getTitle() {
@@ -17,6 +24,19 @@ public class CourseIdea {
 
     public String getCreator() {
         return creator;
+    }
+    public String getSlug() { return slug; }
+
+    public boolean addVoter(String voter) {
+        return voters.add(voter);
+    }
+
+    public int getVoteCount() {
+        return voters.size();
+    }
+
+    public List<String> getVoters() {
+        return new ArrayList<>(voters);
     }
 
     @Override
